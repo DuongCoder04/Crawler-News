@@ -1,10 +1,10 @@
-# 🗞️ X-Wise News Crawler
+# 🗞️ News Crawler
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-success.svg)]()
 
-Hệ thống crawler tự động thu thập tin tức từ các trang báo Việt Nam và lưu vào database X-Wise CMS.
+Hệ thống crawler tự động thu thập tin tức từ các trang báo Việt Nam và lưu vào database.
 
 ## ✨ Features
 
@@ -245,7 +245,7 @@ Create `/etc/systemd/system/xwise-crawler.service`:
 
 ```ini
 [Unit]
-Description=X-Wise News Crawler
+Description=News Crawler
 After=network.target postgresql.service redis.service
 
 [Service]
@@ -332,7 +332,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Built for X-Wise CMS
+- Built for CMS
 - Powered by Python, PostgreSQL, and Redis
 - Inspired by modern web scraping best practices
 

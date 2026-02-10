@@ -27,6 +27,7 @@ pydantic>=2.5.0
 
 # Logging
 loguru>=0.7.0
+colorama>=0.4.6
 
 # URL & Text Processing
 validators>=0.22.0

@@ -1,6 +1,6 @@
 """
-Main Entry Point - Enhanced Version
-Khởi động crawler system với beautiful console output
+Main Entry Point
+Khởi động crawler system
 """
 
 import sys
@@ -31,7 +31,7 @@ def load_domain_configs():
             with open(config_file, 'r', encoding='utf-8') as f:
                 config = json.load(f)
                 configs.append(config)
-                logger.info(f"Loaded config: {config['name']}")
+                Console.info(f"Loaded config: {config['name']}", icon=False)
         except Exception as e:
             Console.error(f"Error loading {config_file}: {e}")
     
@@ -45,7 +45,7 @@ def run_once(domain_name: str = None):
     Args:
         domain_name: Tên domain cần crawl, None = all domains
     """
-    Console.subheader("One-Time Crawl Mode")
+    Console.subheader("🔄 ONE-TIME CRAWL MODE")
     
     # Load configs
     configs = load_domain_configs()
@@ -54,70 +54,50 @@ def run_once(domain_name: str = None):
         Console.error("No domain configs found!")
         return
     
-    Console.info(f"Loaded {len(configs)} domain configurations")
-    
     # Filter by domain name if specified
     if domain_name:
         configs = [c for c in configs if c['domain'] == domain_name or c['name'] == domain_name]
         if not configs:
             Console.error(f"Domain not found: {domain_name}")
             return
-        Console.info(f"Filtering for domain: {domain_name}")
     
     # Initialize Database client
     try:
+        Console.info(f"{Console.ICON_DATABASE} Connecting to database...", icon=False)
         db_client = DatabaseClient()
-        Console.success(f"Connected to database: {db_client.connection_params['database']}@{db_client.connection_params['host']}")
+        Console.success(f"{Console.ICON_CHECK} Database connected", icon=False)
     except Exception as e:
-        Console.error(f"Failed to connect to database: {e}")
-        Console.warning("Please check database configuration in .env file")
+        Console.error(f"Failed to initialize database client: {e}")
+        Console.error("Please check database configuration in .env file")
         return
     
     # Run crawlers
-    total_new = 0
-    total_duplicate = 0
-    
     for config in configs:
         if not config.get('enabled', True):
             Console.warning(f"Skipping disabled domain: {config['name']}")
             continue
         
-        Console.crawling(config['name'])
+        Console.crawl_start(config['name'])
         
         try:
             crawler_type = config.get('crawler_type', 'static')
             
             if crawler_type == 'static':
                 crawler = StaticCrawler(config, db_client)
-                result = crawler.run()
-                
-                # Show stats if available
-                if hasattr(crawler, 'stats'):
-                    stats = crawler.stats
-                    Console.stats(
-                        config['name'],
-                        stats.get('new', 0),
-                        stats.get('duplicate', 0),
-                        stats.get('total', 0)
-                    )
-                    total_new += stats.get('new', 0)
-                    total_duplicate += stats.get('duplicate', 0)
+                crawler.run()
             else:
                 Console.warning(f"Unsupported crawler type: {crawler_type}")
                 
         except Exception as e:
             Console.error(f"Error crawling {config['name']}: {e}")
-            logger.exception(e)
     
     # Show summary
-    Console.separator()
-    Console.subheader("Crawl Summary")
-    Console.success(f"New articles: {total_new}")
-    Console.info(f"Duplicates skipped: {total_duplicate}")
-    
     try:
         total_news = db_client.get_news_count()
-        Console.database_info(total_news)
+        Console.summary_box("📊 CRAWL SUMMARY", {
+            "Total news in database": total_news,
+            "Status": "✅ Complete"
+        })
     except Exception:
         pass
 
@@ -128,9 +108,10 @@ def run_scheduler():
     import time
     from datetime import datetime
     
-    Console.subheader("Scheduler Mode")
-    Console.info("Crawler will run automatically based on schedule configuration")
-    Console.warning("Press Ctrl+C to stop")
+    Console.subheader("🕐 SCHEDULER MODE")
+    Console.info("Crawler will run automatically based on schedule", icon=False)
+    Console.warning("Press Ctrl+C to stop", icon=False)
+    print()
     
     # Load configs
     configs = load_domain_configs()
@@ -141,24 +122,26 @@ def run_scheduler():
     
     # Initialize Database client
     try:
+        Console.info(f"{Console.ICON_DATABASE} Connecting to database...", icon=False)
         db_client = DatabaseClient()
-        Console.success(f"Connected to database: {db_client.connection_params['database']}@{db_client.connection_params['host']}")
+        Console.success(f"{Console.ICON_CHECK} Database connected", icon=False)
+        print()
     except Exception as e:
-        Console.error(f"Failed to connect to database: {e}")
+        Console.error(f"Failed to initialize database client: {e}")
         return
     
     # Setup scheduled jobs for each domain
-    Console.subheader("Scheduling Jobs")
-    
+    Console.subheader("📅 SCHEDULED JOBS")
     scheduled_count = 0
+    
     for config in configs:
         if not config.get('enabled', True):
-            Console.warning(f"Skipping disabled domain: {config['name']}")
+            Console.warning(f"⊘ Disabled: {config['name']}")
             continue
         
         # Get schedule config
         schedule_config = config.get('schedule', {})
-        cron = schedule_config.get('cron', '0 */2 * * *')  # Default: every 2 hours
+        cron = schedule_config.get('cron', '0 */2 * * *')
         description = schedule_config.get('description', 'No description')
         
         # Parse cron to schedule format
@@ -171,64 +154,54 @@ def run_scheduler():
             # Create job function for this domain
             def create_job(domain_config):
                 def job():
-                    Console.timestamp()
-                    Console.crawling(f"{domain_config['name']} (Scheduled)")
+                    Console.crawl_start(f"[Scheduled] {domain_config['name']}")
                     try:
                         crawler = StaticCrawler(domain_config, db_client)
                         crawler.run()
-                        Console.success(f"Completed: {domain_config['name']}")
                     except Exception as e:
                         Console.error(f"Error in scheduled crawl for {domain_config['name']}: {e}")
-                        logger.exception(e)
                 return job
             
             # Schedule based on cron pattern
             if hour.startswith('*/'):
-                # Every N hours
                 hours = int(hour.replace('*/', ''))
                 schedule.every(hours).hours.do(create_job(config))
-                Console.schedule_info(config['name'], f"Every {hours} hours - {description}")
+                Console.success(f"{Console.ICON_CLOCK} {config['name']}: Every {hours} hours", icon=False)
                 scheduled_count += 1
             elif hour == '*':
-                # Every hour
                 schedule.every().hour.do(create_job(config))
-                Console.schedule_info(config['name'], f"Every hour - {description}")
+                Console.success(f"{Console.ICON_CLOCK} {config['name']}: Every hour", icon=False)
                 scheduled_count += 1
             else:
-                # Specific time
                 time_str = f"{hour.zfill(2)}:{minute.zfill(2)}"
                 schedule.every().day.at(time_str).do(create_job(config))
-                Console.schedule_info(config['name'], f"Daily at {time_str} - {description}")
+                Console.success(f"{Console.ICON_CLOCK} {config['name']}: Daily at {time_str}", icon=False)
                 scheduled_count += 1
     
     if scheduled_count == 0:
-        Console.error("No domains scheduled! Please enable at least one domain.")
+        Console.error("No domains scheduled!")
         return
     
-    Console.success(f"Scheduled {scheduled_count} crawler(s)")
-    
-    # Run initial crawl for all domains
-    Console.separator()
-    Console.subheader("Initial Crawl")
-    Console.info("Running initial crawl for all enabled domains...")
+    # Run initial crawl
+    Console.header("🚀 INITIAL CRAWL")
     run_once()
     
     # Start scheduler loop
-    Console.separator()
-    Console.waiting()
+    Console.header("⏳ SCHEDULER RUNNING")
+    Console.info("Waiting for next scheduled run...", icon=False)
+    Console.info(f"Active jobs: {scheduled_count}", icon=False)
+    print()
     
     while True:
         try:
             schedule.run_pending()
-            time.sleep(60)  # Check every minute
+            time.sleep(60)
         except KeyboardInterrupt:
-            Console.separator()
+            print()
             Console.warning("Scheduler stopped by user")
-            Console.info("Goodbye! 👋")
             break
         except Exception as e:
             Console.error(f"Scheduler error: {e}")
-            logger.exception(e)
             time.sleep(60)
 
 
@@ -259,12 +232,10 @@ def main():
             run_scheduler()
             
     except KeyboardInterrupt:
-        Console.separator()
+        print()
         Console.warning("Crawler stopped by user")
-        Console.info("Goodbye! 👋")
     except Exception as e:
         Console.error(f"Fatal error: {e}")
-        logger.exception(e)
         sys.exit(1)
 
 
