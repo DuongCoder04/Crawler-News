@@ -111,7 +111,7 @@ class Console:
 {Fore.CYAN}{Style.BRIGHT}
 ╔═══════════════════════════════════════════════════════════════════╗
 ║                                                                   ║
-║              🗞️  X-WISE NEWS CRAWLER SYSTEM  🗞️                  ║
+║              🗞️  X-WISE NEWS CRAWLER SYSTEM  🗞️                     ║
 ║                                                                   ║
 ║                    Automated News Collection                      ║
 ║                         Version 1.0.0                             ║

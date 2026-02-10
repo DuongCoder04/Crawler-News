@@ -58,7 +58,9 @@ def run_once(domain_name: str = None):
     
     # Filter by domain name if specified
     if domain_name:
-        configs = [c for c in configs if c['domain'] == domain_name or c['name'] == domain_name]
+        configs = [c for c in configs 
+                  if c['domain'].lower() == domain_name.lower() 
+                  or c['name'].lower() == domain_name.lower()]
         if not configs:
             Console.error(f"Domain not found: {domain_name}")
             return

@@ -50,6 +50,14 @@ class BaseCrawler(ABC):
             'Upgrade-Insecure-Requests': '1'
         })
         
+        # Statistics tracking
+        self.stats = {
+            'new': 0,
+            'duplicate': 0,
+            'total': 0,
+            'failed': 0
+        }
+        
         logger.info(f"Initialized {self.name} crawler")
     
     def fetch_page(self, url: str, retries: int = None) -> Optional[str]:
@@ -212,18 +220,25 @@ class BaseCrawler(ABC):
         Args:
             categories: List of category slugs, None = all categories
         """
+        from utils.console import Console
+        
         if not self.config.get('enabled', True):
             logger.warning(f"{self.name} crawler is disabled")
             return
         
         logger.info(f"Starting {self.name} crawler")
         
+        # Reset stats
+        self.stats = {
+            'new': 0,
+            'duplicate': 0,
+            'total': 0,
+            'failed': 0
+        }
+        
         # Get categories to crawl
         if categories is None:
             categories = list(self.config['category_mapping'].keys())
-        
-        total_articles = 0
-        successful_articles = 0
         
         for category in categories:
             logger.info(f"Processing category: {category}")
@@ -232,23 +247,37 @@ class BaseCrawler(ABC):
             article_links = self.crawl_list_page(category)
             
             for link in article_links:
+                self.stats['total'] += 1
+                
                 # Crawl article
                 article_data = self.crawl_article(link)
                 
-                if article_data:
-                    # Map category
-                    xwise_category = self.config['category_mapping'].get(category)
-                    article_data['category_code'] = xwise_category
-                    
-                    # Push to database
-                    success = self.db_client.create_news(article_data)
-                    
-                    if success:
-                        successful_articles += 1
-                    
-                    total_articles += 1
+                if not article_data:
+                    self.stats['failed'] += 1
+                    continue
+                
+                # Map category
+                xwise_category = self.config['category_mapping'].get(category)
+                article_data['category_code'] = xwise_category
+                
+                # Check if duplicate before pushing
+                source_url = article_data.get('source_url')
+                if source_url and self.db_client.check_duplicate(source_url):
+                    self.stats['duplicate'] += 1
+                    Console.article(article_data['title'], status="duplicate")
+                    continue
+                
+                # Push to database
+                success = self.db_client.create_news(article_data)
+                
+                if success:
+                    self.stats['new'] += 1
+                    Console.article(article_data['title'], status="new")
+                else:
+                    self.stats['failed'] += 1
         
         logger.info(
             f"{self.name} crawler finished: "
-            f"{successful_articles}/{total_articles} articles pushed successfully"
+            f"{self.stats['new']} new, {self.stats['duplicate']} duplicates, "
+            f"{self.stats['failed']} failed out of {self.stats['total']} total"
         )
