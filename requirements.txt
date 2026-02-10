@@ -1,0 +1,43 @@
+# X-Wise News Crawler - Python Dependencies
+
+# Database
+psycopg2-binary>=2.9.0
+
+# Core HTTP & Web Scraping
+requests>=2.31.0
+httpx>=0.25.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+html5lib>=1.1
+
+# JavaScript Rendering
+playwright>=1.40.0
+
+# Scheduling
+APScheduler>=3.10.0
+schedule>=1.2.0
+
+# Caching & Queue
+redis>=5.0.0
+hiredis>=2.2.0
+
+# Configuration & Environment
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+
+# Logging
+loguru>=0.7.0
+
+# URL & Text Processing
+validators>=0.22.0
+python-slugify>=8.0.0
+charset-normalizer>=3.3.0
+
+# Date & Time
+python-dateutil>=2.8.0
+pytz>=2023.3
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0

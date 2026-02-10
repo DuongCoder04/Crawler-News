@@ -1,0 +1,60 @@
+{
+    "domain": "tapchibitcoin.io",
+    "name": "Tạp Chí Bitcoin",
+    "enabled": false,
+    "crawler_type": "static",
+    "description": "Tạp chí Bitcoin và blockchain Việt Nam",
+    "category_mapping": {
+        "tin-tuc": "TECH",
+        "blockchain": "TECH",
+        "bitcoin": "TECH",
+        "ethereum": "TECH",
+        "altcoin": "TECH",
+        "defi": "TECH",
+        "nft": "TECH",
+        "web3": "TECH",
+        "phan-tich": "BUSINESS",
+        "thi-truong": "BUSINESS",
+        "kien-thuc": "EDUCATION",
+        "huong-dan": "EDUCATION"
+    },
+    "list_page": {
+        "url_pattern": "https://tapchibitcoin.io/{category}",
+        "selectors": {
+            "article_links": "article.post h2 a, article.post h3 a, div.post-item a.post-link",
+            "pagination": "div.pagination a, nav.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.post-title, h1.entry-title",
+            "summary": "div.post-excerpt, p.lead",
+            "content": "div.post-content, div.entry-content, article.post-body",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "time.published, span.post-date, time[datetime]",
+            "category": "span.post-category a, div.categories a",
+            "tags": "div.post-tags a, span.tags a",
+            "author": "span.author-name, a.author-link"
+        },
+        "remove_elements": [
+            "div.comments-section",
+            "div.related-articles",
+            "div.ads",
+            "div.advertisement",
+            "script",
+            "iframe",
+            "div.banner",
+            "div.social-sharing",
+            "div.newsletter-box",
+            "div.sidebar"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 20,
+        "delay_between_requests": 3
+    },
+    "schedule": {
+        "cron": "0 */3 * * *",
+        "description": "Chạy mỗi 3 giờ"
+    }
+}

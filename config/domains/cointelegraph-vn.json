@@ -1,0 +1,60 @@
+{
+    "domain": "vi.cointelegraph.com",
+    "name": "Cointelegraph Vietnam",
+    "enabled": false,
+    "crawler_type": "static",
+    "description": "Cointelegraph phiên bản tiếng Việt - Tin tức blockchain quốc tế",
+    "category_mapping": {
+        "news": "TECH",
+        "blockchain": "TECH",
+        "bitcoin": "TECH",
+        "ethereum": "TECH",
+        "altcoin": "TECH",
+        "defi": "TECH",
+        "nft": "TECH",
+        "regulation": "LAW",
+        "markets": "BUSINESS",
+        "analysis": "BUSINESS",
+        "technology": "TECH",
+        "innovation": "TECH"
+    },
+    "list_page": {
+        "url_pattern": "https://vi.cointelegraph.com/category/{category}",
+        "selectors": {
+            "article_links": "article a.post-card__title-link, div.post-card a",
+            "pagination": "div.pagination__list a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.post__title",
+            "summary": "p.post__lead",
+            "content": "div.post-content, div.post__content",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "time.post-meta__publish-date",
+            "category": "a.post-meta__category",
+            "tags": "div.tags a.tag",
+            "author": "a.post-meta__author-name"
+        },
+        "remove_elements": [
+            "div.post-actions",
+            "div.related-articles",
+            "div.ads",
+            "div.advertisement",
+            "script",
+            "iframe",
+            "div.banner",
+            "div.social-buttons",
+            "div.newsletter",
+            "aside"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 15,
+        "delay_between_requests": 4
+    },
+    "schedule": {
+        "cron": "0 */4 * * *",
+        "description": "Chạy mỗi 4 giờ"
+    }
+}

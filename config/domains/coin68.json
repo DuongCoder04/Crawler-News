@@ -1,0 +1,58 @@
+{
+    "domain": "coin68.com",
+    "name": "Coin68",
+    "enabled": false,
+    "crawler_type": "static",
+    "description": "Tin tức blockchain và cryptocurrency tiếng Việt",
+    "category_mapping": {
+        "tin-tuc": "TECH",
+        "blockchain": "TECH",
+        "bitcoin": "TECH",
+        "ethereum": "TECH",
+        "altcoin": "TECH",
+        "defi": "TECH",
+        "nft": "TECH",
+        "metaverse": "TECH",
+        "phan-tich": "BUSINESS",
+        "thi-truong": "BUSINESS",
+        "giao-dich": "BUSINESS"
+    },
+    "list_page": {
+        "url_pattern": "https://coin68.com/{category}",
+        "selectors": {
+            "article_links": "article h3 a, article h2 a, div.post-title a",
+            "pagination": "div.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.entry-title, h1.post-title",
+            "summary": "div.entry-excerpt, div.post-excerpt",
+            "content": "div.entry-content, div.post-content, article.post",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "time.entry-date, span.post-date",
+            "category": "span.cat-links a, div.post-categories a",
+            "tags": "div.tag-links a, div.post-tags a",
+            "author": "span.author a, span.post-author"
+        },
+        "remove_elements": [
+            "div.comments",
+            "div.related-posts",
+            "div.ads",
+            "div.advertisement",
+            "script",
+            "iframe",
+            "div.banner",
+            "div.social-share",
+            "div.newsletter-signup"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 20,
+        "delay_between_requests": 3
+    },
+    "schedule": {
+        "cron": "0 */3 * * *",
+        "description": "Chạy mỗi 3 giờ"
+    }
+}

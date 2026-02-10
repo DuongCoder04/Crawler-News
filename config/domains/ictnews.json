@@ -1,0 +1,57 @@
+{
+    "domain": "ictnews.vn",
+    "name": "ICTNews",
+    "enabled": false,
+    "crawler_type": "static",
+    "description": "Tin tức công nghệ thông tin, blockchain, fintech Việt Nam",
+    "category_mapping": {
+        "cong-nghe": "TECH",
+        "blockchain": "TECH",
+        "fintech": "BUSINESS",
+        "khoa-hoc": "SCIENCE",
+        "doanh-nghiep": "BUSINESS",
+        "san-pham": "TECH",
+        "internet": "TECH",
+        "an-ninh-mang": "TECH",
+        "startup": "BUSINESS",
+        "kinh-doanh": "BUSINESS"
+    },
+    "list_page": {
+        "url_pattern": "https://ictnews.vn/{category}",
+        "selectors": {
+            "article_links": "article h3 a, article h2 a, div.article-title a, h3.title a",
+            "pagination": "div.pagination a, ul.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.detail-title, h1.article-title",
+            "summary": "div.detail-sapo, p.sapo",
+            "content": "div.detail-content, div.article-content, div.content-detail",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "span.detail-time, time.publish-time",
+            "category": "div.detail-cate a, span.category a",
+            "tags": "div.detail-tags a, div.tags a",
+            "author": "span.detail-author, span.author-name"
+        },
+        "remove_elements": [
+            "div.detail-comment",
+            "div.detail-related",
+            "div.ads",
+            "div.advertisement",
+            "script",
+            "iframe",
+            "div.banner",
+            "div.social-buttons",
+            "div.box-related"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 25,
+        "delay_between_requests": 2
+    },
+    "schedule": {
+        "cron": "0 */2 * * *",
+        "description": "Chạy mỗi 2 giờ"
+    }
+}

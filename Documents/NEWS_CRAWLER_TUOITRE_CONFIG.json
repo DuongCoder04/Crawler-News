@@ -1,0 +1,58 @@
+{
+    "domain": "tuoitre.vn",
+    "name": "Tuổi Trẻ",
+    "enabled": true,
+    "crawler_type": "static",
+    "category_mapping": {
+        "thoi-su": "POLITICS",
+        "the-gioi": "WORLD",
+        "kinh-doanh": "BUSINESS",
+        "giai-tri": "ENTERTAINMENT",
+        "the-thao": "SPORTS",
+        "phap-luat": "LAW",
+        "giao-duc": "EDUCATION",
+        "suc-khoe": "HEALTH",
+        "xe": "AUTO",
+        "nha-dat": "REALESTATE",
+        "du-lich": "TRAVEL",
+        "khoa-hoc": "SCIENCE",
+        "cong-nghe": "TECH",
+        "van-hoa": "CULTURE"
+    },
+    "list_page": {
+        "url_pattern": "https://tuoitre.vn/{category}.htm",
+        "selectors": {
+            "article_links": "h3.title-news a, h2.title-news a",
+            "pagination": "div.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.article-title",
+            "summary": "h2.sapo",
+            "content": "div#main-detail-content",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "div.date-time",
+            "category": "ul.breadcrumb li:last-child a",
+            "tags": "div.tag-list a",
+            "author": "div.author strong"
+        },
+        "remove_elements": [
+            "div.VCSortableInPreviewMode",
+            "div.box-comment",
+            "div.box-category-related",
+            "div.ads",
+            "script",
+            "iframe",
+            "div.inner-article"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 30,
+        "delay_between_requests": 2
+    },
+    "schedule": {
+        "cron": "30 */2 * * *",
+        "description": "Chạy mỗi 2 giờ, lệch 30 phút"
+    }
+}

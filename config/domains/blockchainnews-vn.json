@@ -1,0 +1,54 @@
+{
+    "domain": "blockchain.news",
+    "name": "Blockchain News VN",
+    "enabled": false,
+    "crawler_type": "static",
+    "description": "Tin tức blockchain từ nguồn quốc tế",
+    "category_mapping": {
+        "bitcoin": "TECH",
+        "ethereum": "TECH",
+        "altcoins": "TECH",
+        "defi": "TECH",
+        "nft": "TECH",
+        "web3": "TECH",
+        "markets": "BUSINESS",
+        "analysis": "BUSINESS",
+        "regulation": "LAW",
+        "technology": "TECH"
+    },
+    "list_page": {
+        "url_pattern": "https://blockchain.news/category/{category}",
+        "selectors": {
+            "article_links": "article a.article-link, div.article-item a",
+            "pagination": "div.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.article-title",
+            "summary": "div.article-summary",
+            "content": "div.article-content",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "time.published-date",
+            "category": "span.category a",
+            "tags": "div.tags a",
+            "author": "span.author-name"
+        },
+        "remove_elements": [
+            "div.comments",
+            "div.related",
+            "div.ads",
+            "script",
+            "iframe",
+            "div.banner"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 20,
+        "delay_between_requests": 3
+    },
+    "schedule": {
+        "cron": "0 */3 * * *",
+        "description": "Chạy mỗi 3 giờ"
+    }
+}

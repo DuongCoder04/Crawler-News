@@ -1,0 +1,57 @@
+{
+    "domain": "dantri.com.vn",
+    "name": "Dân Trí",
+    "enabled": true,
+    "crawler_type": "static",
+    "category_mapping": {
+        "xa-hoi": "POLITICS",
+        "the-gioi": "WORLD",
+        "kinh-doanh": "BUSINESS",
+        "giai-tri": "ENTERTAINMENT",
+        "the-thao": "SPORTS",
+        "phap-luat": "LAW",
+        "giao-duc": "EDUCATION",
+        "suc-khoe": "HEALTH",
+        "oto-xe-may": "AUTO",
+        "nha-dat": "REALESTATE",
+        "du-lich": "TRAVEL",
+        "khoa-hoc-cong-nghe": "TECH",
+        "van-hoa": "CULTURE",
+        "tam-long-nhan-ai": "CHARITY"
+    },
+    "list_page": {
+        "url_pattern": "https://dantri.com.vn/{category}.htm",
+        "selectors": {
+            "article_links": "h3.article-title a, h2.article-title a",
+            "pagination": "nav.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.title-page",
+            "summary": "h2.singular-sapo",
+            "content": "div.singular-content",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "time.author-time",
+            "category": "ul.breadcrumb li:last-child a",
+            "tags": "div.tag-list a",
+            "author": "div.author-name a"
+        },
+        "remove_elements": [
+            "div.box-comment",
+            "div.box-related",
+            "div.ads",
+            "script",
+            "iframe",
+            "div.banner"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 30,
+        "delay_between_requests": 2
+    },
+    "schedule": {
+        "cron": "45 */2 * * *",
+        "description": "Chạy mỗi 2 giờ, lệch 45 phút"
+    }
+}

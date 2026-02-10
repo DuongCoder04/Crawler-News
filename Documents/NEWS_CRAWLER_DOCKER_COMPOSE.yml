@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # Redis Cache (Optional)
+  redis:
+    image: redis:7-alpine
+    container_name: xwise-crawler-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - crawler-network
+
+  # News Crawler
+  crawler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xwise-news-crawler
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - crawler-network
+    command: python main.py --mode scheduler
+
+  # Optional: Celery Worker (for distributed crawling)
+  # celery-worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: xwise-crawler-worker
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - REDIS_HOST=redis
+  #     - REDIS_PORT=6379
+  #   volumes:
+  #     - ./logs:/app/logs
+  #     - ./config:/app/config
+  #   depends_on:
+  #     - redis
+  #   restart: unless-stopped
+  #   networks:
+  #     - crawler-network
+  #   command: celery -A tasks worker --loglevel=info
+
+volumes:
+  redis_data:
+
+networks:
+  crawler-network:
+    driver: bridge

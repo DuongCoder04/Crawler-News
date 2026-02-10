@@ -1,0 +1,58 @@
+{
+    "domain": "genk.vn",
+    "name": "Genk",
+    "enabled": false,
+    "crawler_type": "static",
+    "description": "Tin tức công nghệ, blockchain, crypto Việt Nam",
+    "category_mapping": {
+        "cong-nghe": "TECH",
+        "khoa-hoc": "SCIENCE",
+        "san-pham": "TECH",
+        "internet": "TECH",
+        "blockchain": "TECH",
+        "crypto": "TECH",
+        "game": "ENTERTAINMENT",
+        "startup": "BUSINESS",
+        "dien-thoai": "TECH",
+        "laptop": "TECH"
+    },
+    "list_page": {
+        "url_pattern": "https://genk.vn/{category}",
+        "selectors": {
+            "article_links": "article h3 a, article h2 a, div.knswli-title a, h3.knswli-title a",
+            "pagination": "div.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.knc-title, h1.kbwc-title",
+            "summary": "h2.knc-sapo, div.knc-sapo",
+            "content": "div.knc-content, div.kbwc-content, div.detail-content",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "span.knc-publish-date, time.kbwc-time",
+            "category": "div.knc-category a, span.kbwc-category a",
+            "tags": "div.knc-tags a, div.kbwc-tags a",
+            "author": "span.knc-author, span.kbwc-author"
+        },
+        "remove_elements": [
+            "div.knc-comment",
+            "div.knc-related",
+            "div.ads",
+            "div.advertisement",
+            "script",
+            "iframe",
+            "div.banner",
+            "div.social-share",
+            "div.box-category",
+            "div.box-tinlienquan"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 25,
+        "delay_between_requests": 2
+    },
+    "schedule": {
+        "cron": "0 */2 * * *",
+        "description": "Chạy mỗi 2 giờ"
+    }
+}

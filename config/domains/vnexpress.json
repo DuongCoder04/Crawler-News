@@ -1,0 +1,56 @@
+{
+    "domain": "vnexpress.net",
+    "name": "VnExpress",
+    "enabled": true,
+    "crawler_type": "static",
+    "category_mapping": {
+        "thoi-su": "POLITICS",
+        "the-gioi": "WORLD",
+        "kinh-doanh": "BUSINESS",
+        "giai-tri": "ENTERTAINMENT",
+        "the-thao": "SPORTS",
+        "phap-luat": "LAW",
+        "giao-duc": "EDUCATION",
+        "suc-khoe": "HEALTH",
+        "doi-song": "LIFESTYLE",
+        "du-lich": "TRAVEL",
+        "khoa-hoc": "SCIENCE",
+        "so-hoa": "TECH",
+        "xe": "AUTO"
+    },
+    "list_page": {
+        "url_pattern": "https://vnexpress.net/{category}",
+        "selectors": {
+            "article_links": "article.item-news h3.title-news a, article.item-news h2.title-news a",
+            "pagination": "div.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.title-detail",
+            "summary": "p.description",
+            "content": "article.fck_detail",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "span.date",
+            "category": "ul.breadcrumb li:last-child a",
+            "tags": "div.tags a",
+            "author": "p.author_mail strong"
+        },
+        "remove_elements": [
+            "div.box_comment",
+            "div.box_tinlienquan",
+            "div.ads",
+            "script",
+            "iframe",
+            "div.banner"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 30,
+        "delay_between_requests": 2
+    },
+    "schedule": {
+        "cron": "0 */2 * * *",
+        "description": "Chạy mỗi 2 giờ"
+    }
+}
