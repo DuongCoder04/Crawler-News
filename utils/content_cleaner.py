@@ -22,11 +22,17 @@ class ContentCleaner:
             r'commercial'
         ]
         
-        # Danh sách các tag không mong muốn
+        # Danh sách các tag không mong muốn (bao gồm video)
         self.unwanted_tags = [
             'script', 'style', 'iframe', 'noscript',
-            'embed', 'object', 'applet'
+            'embed', 'object', 'applet', 'video', 'audio',
+            'source', 'track'
         ]
+        
+        # Cấu hình font và cỡ chữ chuẩn
+        self.standard_font = 'Arial, sans-serif'
+        self.standard_font_size = '16px'
+        self.standard_line_height = '1.6'
     
     def clean(self, html: str) -> str:
         """
@@ -44,9 +50,25 @@ class ContentCleaner:
         try:
             soup = BeautifulSoup(html, 'lxml')
             
-            # Remove unwanted tags
+            # Remove unwanted tags (bao gồm video)
             for tag_name in self.unwanted_tags:
                 for tag in soup.find_all(tag_name):
+                    tag.decompose()
+            
+            # Remove video containers by common class names
+            video_patterns = [
+                r'video[-_]?',
+                r'player[-_]?',
+                r'media[-_]?player',
+                r'youtube',
+                r'vimeo',
+                r'dailymotion'
+            ]
+            for pattern in video_patterns:
+                regex = re.compile(pattern, re.IGNORECASE)
+                for tag in soup.find_all(class_=regex):
+                    tag.decompose()
+                for tag in soup.find_all(id=regex):
                     tag.decompose()
             
             # Remove elements with ad-related class/id
@@ -60,6 +82,9 @@ class ContentCleaner:
                 # Remove by id
                 for tag in soup.find_all(id=regex):
                     tag.decompose()
+            
+            # Normalize font and styling
+            self._normalize_styling(soup)
             
             # Remove empty paragraphs
             for p in soup.find_all('p'):
@@ -81,6 +106,64 @@ class ContentCleaner:
         except Exception as e:
             logger.error(f"Error cleaning content: {e}")
             return html
+    
+    def _normalize_styling(self, soup: BeautifulSoup):
+        """
+        Chuẩn hóa font, cỡ chữ và styling
+        
+        Args:
+            soup: BeautifulSoup object
+        """
+        # Remove inline styles that affect font/size
+        for tag in soup.find_all(style=True):
+            style = tag.get('style', '')
+            # Remove font-related styles
+            style = re.sub(r'font-family:[^;]+;?', '', style, flags=re.IGNORECASE)
+            style = re.sub(r'font-size:[^;]+;?', '', style, flags=re.IGNORECASE)
+            style = re.sub(r'line-height:[^;]+;?', '', style, flags=re.IGNORECASE)
+            style = re.sub(r'color:[^;]+;?', '', style, flags=re.IGNORECASE)
+            
+            if style.strip():
+                tag['style'] = style.strip()
+            else:
+                del tag['style']
+        
+        # Remove font tags
+        for font_tag in soup.find_all('font'):
+            font_tag.unwrap()
+        
+        # Remove size/color attributes
+        for tag in soup.find_all():
+            if tag.has_attr('size'):
+                del tag['size']
+            if tag.has_attr('color'):
+                del tag['color']
+            if tag.has_attr('face'):
+                del tag['face']
+        
+        # Normalize heading tags
+        for i in range(1, 7):
+            for heading in soup.find_all(f'h{i}'):
+                # Remove inline styles from headings
+                if heading.has_attr('style'):
+                    del heading['style']
+        
+        # Normalize paragraph tags
+        for p in soup.find_all('p'):
+            # Remove inline styles from paragraphs
+            if p.has_attr('style'):
+                style = p.get('style', '')
+                # Keep only important styles like text-align
+                important_styles = []
+                if 'text-align' in style.lower():
+                    align_match = re.search(r'text-align:\s*([^;]+)', style, re.IGNORECASE)
+                    if align_match:
+                        important_styles.append(f'text-align: {align_match.group(1).strip()}')
+                
+                if important_styles:
+                    p['style'] = '; '.join(important_styles)
+                else:
+                    del p['style']
     
     def _clean_text(self, html: str) -> str:
         """Làm sạch text trong HTML"""
