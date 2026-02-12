@@ -1,0 +1,58 @@
+{
+    "domain": "zingnews.vn",
+    "name": "Zing News",
+    "enabled": true,
+    "crawler_type": "static",
+    "description": "Zing News - Tin tức tổng hợp Việt Nam",
+    "category_mapping": {
+        "thoi-su": "POLITICS",
+        "the-gioi": "WORLD",
+        "kinh-doanh-tai-chinh": "BUSINESS",
+        "van-hoa": "CULTURE",
+        "giao-duc": "EDUCATION",
+        "suc-khoe": "HEALTH",
+        "the-thao": "SPORTS",
+        "giai-tri": "ENTERTAINMENT",
+        "phap-luat": "LAW",
+        "du-lich": "TRAVEL",
+        "cong-nghe": "TECH",
+        "oto-xe-may": "AUTO"
+    },
+    "list_page": {
+        "url_pattern": "https://zingnews.vn/{category}.html",
+        "selectors": {
+            "article_links": "article.article-item h2 a, article.article-item h3 a, p.article-title a",
+            "pagination": "div.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.the-article-title",
+            "summary": "p.the-article-summary",
+            "content": "div.the-article-body",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "span.the-article-publish",
+            "category": "ul.the-article-category a",
+            "tags": "div.the-article-tags a",
+            "author": "div.the-article-credit"
+        },
+        "remove_elements": [
+            "div.inner-article-comment",
+            "div.inner-article-related",
+            "div.ads",
+            "div.advertisement",
+            "script",
+            "iframe",
+            "div.banner",
+            "div.box-tinlienquan"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 30,
+        "delay_between_requests": 2
+    },
+    "schedule": {
+        "cron": "0 */2 * * *",
+        "description": "Chạy mỗi 2 giờ"
+    }
+}

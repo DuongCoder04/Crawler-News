@@ -1,0 +1,59 @@
+{
+    "domain": "vietnamnet.vn",
+    "name": "VietnamNet",
+    "enabled": true,
+    "crawler_type": "static",
+    "description": "VietnamNet - Tin tức tổng hợp Việt Nam",
+    "category_mapping": {
+        "thoi-su": "POLITICS",
+        "the-gioi": "WORLD",
+        "kinh-doanh": "BUSINESS",
+        "van-hoa": "CULTURE",
+        "giao-duc": "EDUCATION",
+        "suc-khoe": "HEALTH",
+        "the-thao": "SPORTS",
+        "giai-tri": "ENTERTAINMENT",
+        "phap-luat": "LAW",
+        "du-lich": "TRAVEL",
+        "cong-nghe": "TECH",
+        "oto-xe-may": "AUTO",
+        "bat-dong-san": "REALESTATE"
+    },
+    "list_page": {
+        "url_pattern": "https://vietnamnet.vn/{category}",
+        "selectors": {
+            "article_links": "h3.vnn-title a, h2.vnn-title a, article h3 a",
+            "pagination": "div.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.content-detail-title",
+            "summary": "h2.content-detail-sapo",
+            "content": "div#maincontent, div.maincontent",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "span.time",
+            "category": "ul.breadcrumb li a",
+            "tags": "div.tags a",
+            "author": "div.author-info"
+        },
+        "remove_elements": [
+            "div.box-comment",
+            "div.box-related",
+            "div.ads",
+            "div.advertisement",
+            "script",
+            "iframe",
+            "div.banner",
+            "div.box-category"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 30,
+        "delay_between_requests": 2
+    },
+    "schedule": {
+        "cron": "0 */2 * * *",
+        "description": "Chạy mỗi 2 giờ"
+    }
+}

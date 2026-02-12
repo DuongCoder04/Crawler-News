@@ -1,0 +1,59 @@
+{
+    "domain": "thanhnien.vn",
+    "name": "Thanh Niên",
+    "enabled": true,
+    "crawler_type": "static",
+    "description": "Báo Thanh Niên - Tin tức tổng hợp Việt Nam",
+    "category_mapping": {
+        "thoi-su": "POLITICS",
+        "the-gioi": "WORLD",
+        "kinh-te": "BUSINESS",
+        "van-hoa": "CULTURE",
+        "giao-duc": "EDUCATION",
+        "suc-khoe": "HEALTH",
+        "the-thao": "SPORTS",
+        "giai-tri": "ENTERTAINMENT",
+        "phap-luat": "LAW",
+        "du-lich": "TRAVEL",
+        "cong-nghe": "TECH",
+        "xe": "AUTO",
+        "doi-song": "LIFESTYLE"
+    },
+    "list_page": {
+        "url_pattern": "https://thanhnien.vn/{category}/",
+        "selectors": {
+            "article_links": "h2.story__heading a, h3.story__heading a",
+            "pagination": "div.pagination a"
+        }
+    },
+    "detail_page": {
+        "selectors": {
+            "title": "h1.detail__title",
+            "summary": "div.detail__sapo",
+            "content": "div#contentbody, div.detail__content",
+            "thumbnail": "meta[property='og:image']",
+            "published_date": "div.detail__meta time",
+            "category": "ul.breadcrumbs li a",
+            "tags": "div.detail__tags a",
+            "author": "div.detail__author"
+        },
+        "remove_elements": [
+            "div.detail__comment",
+            "div.detail__related",
+            "div.ads",
+            "div.advertisement",
+            "script",
+            "iframe",
+            "div.banner",
+            "div.box-category"
+        ]
+    },
+    "rate_limit": {
+        "requests_per_minute": 30,
+        "delay_between_requests": 2
+    },
+    "schedule": {
+        "cron": "0 */2 * * *",
+        "description": "Chạy mỗi 2 giờ"
+    }
+}
