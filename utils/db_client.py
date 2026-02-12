@@ -91,7 +91,7 @@ class DatabaseClient:
     
     def create_news(self, article_data: Dict) -> bool:
         """
-        Tạo tin tức mới trong database
+        Tạo tin tức mới trong database với thumbnail upload lên CDN
         
         Args:
             article_data: Dictionary chứa dữ liệu bài viết
@@ -132,21 +132,14 @@ class DatabaseClient:
             conn = self._get_connection()
             cursor = conn.cursor()
             
-            # Prepare content with thumbnail
+            # Create news record
+            news_id = str(uuid.uuid4())
             content = article_data['content']
-            
-            # Add thumbnail as img tag at the beginning if exists
-            if article_data.get('thumbnail'):
-                thumbnail_html = f'<img src="{article_data["thumbnail"]}" alt="thumbnail" style="max-width:100%"/><br/>'
-                content = thumbnail_html + content
             
             # Add source info to content as HTML comment
             if source_url:
                 source_name = article_data.get('source_name', 'Unknown')
                 content += f'\n<!-- Source: {source_name} | URL: {source_url} -->'
-            
-            # Create news record
-            news_id = str(uuid.uuid4())
             
             cursor.execute("""
                 INSERT INTO news (id, title, content, status, category_code, created_at, reaction_count)
@@ -155,12 +148,46 @@ class DatabaseClient:
             """, (
                 news_id,
                 article_data['title'][:500],  # Max 500 chars for title
-                content,  # Full content with thumbnail
+                content,
                 'ACTIVE',
                 article_data['category_code'],
                 datetime.now(),
                 0
             ))
+            
+            # Upload thumbnail to CDN and create attachment record
+            if article_data.get('thumbnail'):
+                try:
+                    from utils.cdn_uploader import CDNUploader
+                    
+                    cdn_uploader = CDNUploader()
+                    cdn_data = cdn_uploader.upload_with_retry(article_data['thumbnail'])
+                    
+                    if cdn_data:
+                        # Create attachment record with CDN URL
+                        attachment_id = str(uuid.uuid4())
+                        
+                        cursor.execute("""
+                            INSERT INTO attachment (id, url, object_type, object_id, created_at, status, file_name, extension)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        """, (
+                            attachment_id,
+                            cdn_data['url'],  # CDN URL
+                            'NEWS',
+                            news_id,
+                            datetime.now(),
+                            'ACTIVE',
+                            cdn_data.get('key', ''),
+                            cdn_data.get('mimetype', 'image/jpeg').split('/')[-1]
+                        ))
+                        
+                        logger.success(f"Created attachment: {cdn_data['url']}")
+                    else:
+                        logger.warning(f"Failed to upload thumbnail to CDN for news: {news_id}")
+                        
+                except Exception as e:
+                    logger.error(f"Error uploading thumbnail to CDN: {e}")
+                    # Continue without thumbnail - don't fail the whole operation
             
             conn.commit()
             

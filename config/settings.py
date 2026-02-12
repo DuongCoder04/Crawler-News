@@ -43,3 +43,8 @@ LOG_RETENTION = os.getenv('LOG_RETENTION', '30 days')
 MAX_ARTICLES_PER_CATEGORY = int(os.getenv('MAX_ARTICLES_PER_CATEGORY', 50))
 CACHE_TTL = int(os.getenv('CACHE_TTL', 7776000))  # 90 days
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
+
+# CDN Configuration
+CDN_UPLOAD_URL = os.getenv('CDN_UPLOAD_URL', 'https://upload.0x2labs.com/upload')
+CDN_API_KEY = os.getenv('CDN_API_KEY', '')
+CDN_BUCKET = os.getenv('CDN_BUCKET', 'images')
