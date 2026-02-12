@@ -145,7 +145,7 @@ CREATE TABLE news (
 CREATE TABLE attachment (
     id UUID PRIMARY KEY,
     url VARCHAR(255),           -- CDN URL
-    object_type VARCHAR(255),   -- 'NEWS'
+    object_type VARCHAR(255),   -- 'news' (lowercase)
     object_id VARCHAR(255),     -- news.id
     file_name VARCHAR(255),
     extension VARCHAR(255),

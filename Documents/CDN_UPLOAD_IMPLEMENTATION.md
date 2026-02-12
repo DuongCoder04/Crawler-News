@@ -74,7 +74,7 @@ if cdn_data:
 {
     'id': 'uuid',
     'url': 'https://cdn.0x2labs.com/images/xxx.jpg',  # CDN URL
-    'object_type': 'NEWS',
+    'object_type': 'news',
     'object_id': 'news_id',
     'created_at': datetime.now(),
     'status': 'ACTIVE',
@@ -125,7 +125,7 @@ curl -X POST https://upload.0x2labs.com/upload \
 CREATE TABLE attachment (
     id UUID PRIMARY KEY,
     url VARCHAR(255),              -- CDN URL
-    object_type VARCHAR(255),      -- 'NEWS'
+    object_type VARCHAR(255),      -- 'news'
     object_id VARCHAR(255),        -- news.id
     created_at TIMESTAMP,
     status VARCHAR(255),           -- 'ACTIVE'
@@ -260,7 +260,7 @@ const thumbnail = await attachmentRepository.findOne({
 // Option 2: Join query
 const news = await newsRepository
   .createQueryBuilder('news')
-  .leftJoinAndSelect('attachment', 'att', 'att.object_id = news.id AND att.object_type = :type', { type: 'NEWS' })
+  .leftJoinAndSelect('attachment', 'att', 'att.object_id = news.id AND att.object_type = :type', { type: 'news' })
   .where('news.id = :id', { id: newsId })
   .getOne();
 ```
@@ -302,7 +302,7 @@ python main.py --mode once --domain vnexpress
 -- Check attachments
 SELECT id, url, object_type, object_id, file_name 
 FROM attachment 
-WHERE object_type = 'NEWS' 
+WHERE object_type = 'news' 
 ORDER BY created_at DESC 
 LIMIT 10;
 

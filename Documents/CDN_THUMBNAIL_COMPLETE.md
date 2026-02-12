@@ -36,7 +36,7 @@ CDNUploader()
 {
     'id': 'uuid',
     'url': 'https://cdn.0x2labs.com/images/xxx.jpg',  # CDN URL
-    'object_type': 'NEWS',
+    'object_type': 'news',
     'object_id': 'news_id',
     'file_name': 'xxx.jpg',
     'extension': 'jpg',
@@ -250,7 +250,7 @@ const news = await newsRepository
     'attachment', 
     'att', 
     'att.object_id::uuid = news.id AND att.object_type = :type', 
-    { type: 'NEWS' }
+    { type: 'news' }
   )
   .where('news.id = :id', { id: newsId })
   .getOne();

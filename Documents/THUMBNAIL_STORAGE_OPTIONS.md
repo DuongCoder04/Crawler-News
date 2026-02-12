@@ -227,7 +227,7 @@ python main.py --mode once --domain vnexpress
 SELECT id, title, LEFT(content, 100) FROM news ORDER BY created_at DESC LIMIT 5;
 
 -- Check attachments
-SELECT id, url, object_type, object_id, file_name FROM attachment WHERE object_type = 'NEWS' ORDER BY created_at DESC LIMIT 5;
+SELECT id, url, object_type, object_id, file_name FROM attachment WHERE object_type = 'news' ORDER BY created_at DESC LIMIT 5;
 ```
 
 ### Bước 5: Update Frontend (Nếu Cần)

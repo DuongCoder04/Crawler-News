@@ -173,7 +173,7 @@ class DatabaseClient:
                         """, (
                             attachment_id,
                             cdn_data['url'],  # CDN URL
-                            'NEWS',
+                            'news',  # lowercase object_type
                             news_id,
                             datetime.now(),
                             'ACTIVE',

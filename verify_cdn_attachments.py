@@ -23,7 +23,7 @@ def verify_attachments():
     cursor.execute("""
         SELECT id, url, object_type, object_id, file_name, extension, created_at
         FROM attachment
-        WHERE object_type = 'NEWS'
+        WHERE object_type = 'news'
         ORDER BY created_at DESC
         LIMIT 10
     """)
@@ -48,7 +48,7 @@ def verify_attachments():
     cursor.execute("""
         SELECT n.id, n.title, a.url
         FROM news n
-        LEFT JOIN attachment a ON a.object_id = n.id AND a.object_type = 'NEWS'
+        LEFT JOIN attachment a ON a.object_id::uuid = n.id AND a.object_type = 'news'
         WHERE a.url IS NOT NULL
         ORDER BY n.created_at DESC
         LIMIT 5

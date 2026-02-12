@@ -42,7 +42,7 @@ CREATE TABLE news (
 CREATE TABLE attachment (
     id UUID PRIMARY KEY,
     url VARCHAR(255),
-    object_type VARCHAR(255),  -- 'NEWS'
+    object_type VARCHAR(255),  -- 'news'
     object_id VARCHAR(255),    -- news.id
     created_at DATE,
     status VARCHAR(255),
