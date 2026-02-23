@@ -30,11 +30,32 @@ class CDNUploader:
             Image bytes or None if failed
         """
         try:
+            # Remove query parameters that might cause issues (like watermark=true)
+            from urllib.parse import urlparse, urlunparse
+            parsed = urlparse(image_url)
+            
+            # Remove query string for problematic domains
+            if 'dantri' in parsed.netloc:
+                # Rebuild URL without query string
+                image_url = urlunparse((parsed.scheme, parsed.netloc, parsed.path, '', '', ''))
+            
+            domain = parsed.netloc
+            
+            # Set appropriate referer
+            if 'dantri' in domain:
+                referer = 'https://dantri.com.vn/'
+            elif 'vnexpress' in domain:
+                referer = 'https://vnexpress.net/'
+            elif 'zingnews' in domain:
+                referer = 'https://zingnews.vn/'
+            else:
+                referer = f'https://{domain}/'
+            
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
                 'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
-                'Referer': 'https://vnexpress.net/',
+                'Referer': referer,
                 'DNT': '1',
                 'Connection': 'keep-alive',
             }

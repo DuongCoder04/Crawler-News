@@ -179,7 +179,7 @@ nano .env
 python main.py --mode once --domain vnexpress.net
 
 # Kiểm tra database
-psql -h $DB_HOST -U $DB_USER -d $DB_NAME \
+psql -h $DB_WISE_HOST -U $DB_WISE_USER -d $DB_WISE_NAME \
   -c "SELECT id, title, category_code, created_at FROM news ORDER BY created_at DESC LIMIT 10;"
 
 # Kiểm tra Redis cache

@@ -40,8 +40,8 @@ def test_config():
     try:
         from config import settings
         
-        print(f"Database: {settings.DB_NAME}@{settings.DB_HOST}:{settings.DB_PORT}")
-        print(f"User: {settings.DB_USER}")
+        print(f"Database: {settings.DB_WISE_NAME}@{settings.DB_WISE_HOST}:{settings.DB_WISE_PORT}")
+        print(f"User: {settings.DB_WISE_USER}")
         print(f"Redis: {'✅ Enabled' if settings.REDIS_ENABLED else '⚠️  Disabled'}")
         
         return True

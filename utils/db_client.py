@@ -17,18 +17,18 @@ class DatabaseClient:
     
     def __init__(self):
         self.connection_params = {
-            'host': settings.DB_HOST,
-            'port': settings.DB_PORT,
-            'user': settings.DB_USER,
-            'password': settings.DB_PASSWORD,
-            'database': settings.DB_NAME
+            'host': settings.DB_WISE_HOST,
+            'port': settings.DB_WISE_PORT,
+            'user': settings.DB_WISE_USER,
+            'password': settings.DB_WISE_PASS,
+            'database': settings.DB_WISE_NAME
         }
         
         # Test connection
         try:
             conn = self._get_connection()
             conn.close()
-            logger.info(f"Connected to database: {settings.DB_NAME}@{settings.DB_HOST}")
+            logger.info(f"Connected to database: {settings.DB_WISE_NAME}@{settings.DB_WISE_HOST}")
         except Exception as e:
             logger.error(f"Failed to connect to database: {e}")
             raise

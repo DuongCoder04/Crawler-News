@@ -34,12 +34,13 @@ class ContentCleaner:
         self.standard_font_size = '16px'
         self.standard_line_height = '1.6'
     
-    def clean(self, html: str) -> str:
+    def clean(self, html: str, source_name: str = '') -> str:
         """
         Làm sạch HTML content
         
         Args:
             html: Raw HTML content
+            source_name: Tên nguồn tin (để xử lý đặc biệt cho từng nguồn)
             
         Returns:
             Cleaned HTML content
@@ -83,13 +84,18 @@ class ContentCleaner:
                 for tag in soup.find_all(id=regex):
                     tag.decompose()
             
+            # Xử lý đặc biệt cho Dân Trí
+            if 'dân trí' in source_name.lower() or 'dantri' in source_name.lower():
+                self._clean_dantri_specific(soup)
+            
+            # Fix images - convert lazy loading to actual src
+            self._fix_images(soup)
+            
             # Normalize font and styling
             self._normalize_styling(soup)
             
-            # Remove empty paragraphs
-            for p in soup.find_all('p'):
-                if not p.get_text(strip=True):
-                    p.decompose()
+            # Remove empty paragraphs and excessive whitespace
+            self._remove_empty_elements(soup)
             
             # Remove comments
             for comment in soup.find_all(string=lambda text: isinstance(text, str) and '<!--' in text):
@@ -101,11 +107,138 @@ class ContentCleaner:
             # Additional text cleaning
             cleaned_html = self._clean_text(cleaned_html)
             
+            # Remove "(Dân trí) - " prefix
+            cleaned_html = re.sub(r'^\s*\(Dân trí\)\s*[-–—]\s*', '', cleaned_html, flags=re.IGNORECASE)
+            cleaned_html = re.sub(r'<p[^>]*>\s*\(Dân trí\)\s*[-–—]\s*', '<p>', cleaned_html, flags=re.IGNORECASE)
+            
             return cleaned_html
             
         except Exception as e:
             logger.error(f"Error cleaning content: {e}")
             return html
+    
+    def _clean_dantri_specific(self, soup: BeautifulSoup):
+        """
+        Xử lý đặc biệt cho nội dung Dân Trí
+        
+        Args:
+            soup: BeautifulSoup object
+        """
+        # Remove author info container (avatar, name, time)
+        # Dantri uses specific structure: div.dt-flex.dt-items-center.dt-gap-1
+        for div in soup.find_all('div', class_=lambda x: x and 'dt-flex' in x and 'dt-items-center' in x):
+            # Check if contains author link or avatar
+            if div.find('a', href=lambda x: x and 'tac-gia' in x):
+                div.decompose()
+                continue
+            # Check if contains time element
+            if div.find('time'):
+                div.decompose()
+                continue
+        
+        # Remove all links to author pages
+        for a in soup.find_all('a', href=lambda x: x and 'tac-gia' in x):
+            parent = a.parent
+            if parent:
+                parent.decompose()
+        
+        # Remove time/date elements
+        for time_tag in soup.find_all('time'):
+            time_tag.decompose()
+        
+        # Remove avatar images (small images, usually 24x24 or 36x36)
+        for img in soup.find_all('img'):
+            width = img.get('width', '')
+            height = img.get('height', '')
+            alt = img.get('alt', '').lower()
+            src = img.get('src', '').lower()
+            
+            # Remove if it's a small avatar image
+            if (width and int(width) <= 50) or (height and int(height) <= 50):
+                img.decompose()
+            elif 'avatar' in alt or 'avatar' in src or 'tac-gia' in src:
+                img.decompose()
+        
+        # Remove "(Dân trí) - " from h2 sapo
+        for h2 in soup.find_all('h2'):
+            text = h2.get_text()
+            if text.startswith('(Dân trí)') or text.startswith('(Dân Trí)'):
+                # Remove the prefix
+                new_text = re.sub(r'^\s*\(Dân [tT]rí\)\s*[-–—]\s*', '', text)
+                h2.string = new_text
+    
+    def _fix_images(self, soup: BeautifulSoup):
+        """
+        Fix image tags - convert lazy loading to actual src
+        
+        Args:
+            soup: BeautifulSoup object
+        """
+        for img in soup.find_all('img'):
+            # Check for lazy loading attributes
+            if img.has_attr('data-src'):
+                img['src'] = img['data-src']
+                del img['data-src']
+            
+            if img.has_attr('data-original'):
+                img['src'] = img['data-original']
+                del img['data-original']
+            
+            if img.has_attr('data-lazy-src'):
+                img['src'] = img['data-lazy-src']
+                del img['data-lazy-src']
+            
+            # Remove loading="lazy" attribute
+            if img.has_attr('loading'):
+                del img['loading']
+            
+            # Ensure img has src attribute
+            if not img.has_attr('src') or not img['src'] or img['src'].startswith('data:'):
+                # Try to find src in other attributes
+                for attr in ['data-url', 'data-image', 'data-img']:
+                    if img.has_attr(attr):
+                        img['src'] = img[attr]
+                        break
+                else:
+                    # If still no valid src, remove the img tag
+                    img.decompose()
+                    continue
+            
+            # Add alt text if missing
+            if not img.has_attr('alt'):
+                img['alt'] = 'Image'
+            
+            # Remove excessive attributes
+            attrs_to_keep = ['src', 'alt', 'title', 'width', 'height']
+            attrs_to_remove = [attr for attr in img.attrs if attr not in attrs_to_keep]
+            for attr in attrs_to_remove:
+                del img[attr]
+    
+    def _remove_empty_elements(self, soup: BeautifulSoup):
+        """
+        Remove empty elements and excessive whitespace
+        
+        Args:
+            soup: BeautifulSoup object
+        """
+        # Remove empty paragraphs
+        for p in soup.find_all('p'):
+            text = p.get_text(strip=True)
+            # Remove if empty or only contains whitespace/special chars
+            if not text or text in ['&nbsp;', '\xa0', ' ']:
+                p.decompose()
+        
+        # Remove empty divs
+        for div in soup.find_all('div'):
+            if not div.get_text(strip=True) and not div.find_all('img'):
+                div.decompose()
+        
+        # Remove excessive br tags
+        for br in soup.find_all('br'):
+            # Check if there are multiple consecutive br tags
+            next_sibling = br.next_sibling
+            if next_sibling and next_sibling.name == 'br':
+                br.decompose()
     
     def _normalize_styling(self, soup: BeautifulSoup):
         """
@@ -167,13 +300,24 @@ class ContentCleaner:
     
     def _clean_text(self, html: str) -> str:
         """Làm sạch text trong HTML"""
-        # Remove multiple spaces
-        html = re.sub(r'\s+', ' ', html)
+        # Remove excessive whitespace between tags
+        html = re.sub(r'>\s+<', '><', html)
+        
+        # Remove multiple spaces within text
+        html = re.sub(r'[ \t]+', ' ', html)
         
         # Remove spaces before punctuation
         html = re.sub(r'\s+([.,;:!?])', r'\1', html)
         
-        # Remove multiple line breaks
-        html = re.sub(r'\n\s*\n', '\n\n', html)
+        # Remove multiple line breaks (more than 2)
+        html = re.sub(r'\n{3,}', '\n\n', html)
+        
+        # Remove leading/trailing whitespace in paragraphs
+        html = re.sub(r'<p>\s+', '<p>', html)
+        html = re.sub(r'\s+</p>', '</p>', html)
+        
+        # Remove &nbsp; entities
+        html = html.replace('&nbsp;', ' ')
+        html = html.replace('\xa0', ' ')
         
         return html.strip()

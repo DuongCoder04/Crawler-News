@@ -80,7 +80,7 @@
 
 - [ ] **Verify Database**
   ```bash
-  psql -h $DB_HOST -U $DB_USER -d $DB_NAME \
+  psql -h $DB_WISE_HOST -U $DB_WISE_USER -d $DB_WISE_NAME \
     -c "SELECT id, title, category_code, created_at FROM news ORDER BY created_at DESC LIMIT 5;"
   ```
 
@@ -161,11 +161,11 @@ docker run -d -p 6379:6379 redis:7-alpine
 
 ```bash
 # Xem số bài đã crawl hôm nay
-psql -h $DB_HOST -U $DB_USER -d $DB_NAME \
+psql -h $DB_WISE_HOST -U $DB_WISE_USER -d $DB_WISE_NAME \
   -c "SELECT COUNT(*) FROM news WHERE created_at::date = CURRENT_DATE;"
 
 # Xem số bài theo category
-psql -h $DB_HOST -U $DB_USER -d $DB_NAME \
+psql -h $DB_WISE_HOST -U $DB_WISE_USER -d $DB_WISE_NAME \
   -c "SELECT category_code, COUNT(*) FROM news GROUP BY category_code ORDER BY COUNT(*) DESC;"
 
 # Xem cache size trong Redis

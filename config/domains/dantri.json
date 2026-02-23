@@ -27,11 +27,11 @@
     },
     "detail_page": {
         "selectors": {
-            "title": "h1.title-page",
-            "summary": "h2.singular-sapo",
-            "content": "div.singular-content, div.e-magazine__body",
+            "title": "h1",
+            "summary": "meta[name='description']",
+            "content": "article",
             "thumbnail": "meta[property='og:image']",
-            "published_date": "time.author-time",
+            "published_date": "time",
             "category": "ul.breadcrumb li a",
             "tags": "div.tag-list a",
             "author": "div.author-name"
@@ -44,7 +44,15 @@
             "script",
             "iframe",
             "div.banner",
-            "div.box-category"
+            "div.box-category",
+            "div.author",
+            "div.dt-author",
+            "div.writer-info",
+            "div.author-info",
+            "time",
+            "div.social-share",
+            "div.tags",
+            "div.related"
         ]
     },
     "rate_limit": {

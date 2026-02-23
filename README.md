@@ -52,11 +52,11 @@ Edit `.env` file:
 
 ```bash
 # Database
-DB_HOST=your_host
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_NAME=wise_local
+DB_WISE_HOST=your_host
+DB_WISE_PORT=5432
+DB_WISE_USER=postgres
+DB_WISE_PASS=your_password
+DB_WISE_NAME=wise_local
 
 # CDN
 CDN_UPLOAD_URL=https://upload.0x2labs.com/upload

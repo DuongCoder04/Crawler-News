@@ -200,9 +200,10 @@ class BaseCrawler(ABC):
         article_data = self.extract_article_data(html, url)
         
         if article_data:
-            # Clean content
+            # Clean content with source name for special handling
             article_data['content'] = self.content_cleaner.clean(
-                article_data['content']
+                article_data['content'],
+                source_name=self.name
             )
             
             # Add metadata

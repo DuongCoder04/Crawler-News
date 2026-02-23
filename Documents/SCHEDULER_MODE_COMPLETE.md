@@ -191,11 +191,11 @@ File: `Crawler/.env`
 
 ```env
 # Database
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=123456789
-DB_NAME=wise_local
+DB_WISE_HOST=127.0.0.1
+DB_WISE_PORT=5432
+DB_WISE_USER=postgres
+DB_WISE_PASS=123456789
+DB_WISE_NAME=wise_local
 
 # Redis
 REDIS_ENABLED=true

@@ -10,11 +10,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Database Configuration
-DB_HOST = os.getenv('DB_HOST', '127.0.0.1')
-DB_PORT = int(os.getenv('DB_PORT', 5432))
-DB_USER = os.getenv('DB_USER', 'postgres')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_NAME = os.getenv('DB_NAME', 'wise_local')
+DB_WISE_HOST = os.getenv('DB_WISE_HOST', '127.0.0.1')
+DB_WISE_PORT = int(os.getenv('DB_WISE_PORT', 5432))
+DB_WISE_USER = os.getenv('DB_WISE_USER', 'postgres')
+DB_WISE_PASS = os.getenv('DB_WISE_PASS')
+DB_WISE_NAME = os.getenv('DB_WISE_NAME', 'wise_local')
 
 # Crawler Configuration
 CRAWLER_USER_AGENT = os.getenv('CRAWLER_USER_AGENT', 'XwiseNewsCrawler/1.0')
