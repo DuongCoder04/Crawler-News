@@ -44,7 +44,28 @@ MAX_ARTICLES_PER_CATEGORY = int(os.getenv('MAX_ARTICLES_PER_CATEGORY', 50))
 CACHE_TTL = int(os.getenv('CACHE_TTL', 7776000))  # 90 days
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
+# Rate Limiting Configuration
+DEFAULT_RATE_LIMIT = int(os.getenv('DEFAULT_RATE_LIMIT', 30))
+DEFAULT_DELAY_BETWEEN_REQUESTS = int(os.getenv('DEFAULT_DELAY_BETWEEN_REQUESTS', 2))
+
 # CDN Configuration
 CDN_UPLOAD_URL = os.getenv('CDN_UPLOAD_URL', 'https://upload.0x2labs.com/upload')
 CDN_API_KEY = os.getenv('CDN_API_KEY', '')
 CDN_BUCKET = os.getenv('CDN_BUCKET', 'images')
+
+
+def get_rate_limit_for_domain(domain: str) -> int:
+    """
+    Get rate limit for specific domain from environment variables
+    
+    Args:
+        domain: Domain name (e.g., 'vnexpress.net', 'dantri.com.vn')
+        
+    Returns:
+        Rate limit (requests per minute)
+    """
+    # Convert domain to env var format: vnexpress.net -> RATE_LIMIT_VNEXPRESS
+    domain_key = domain.split('.')[0].upper()
+    env_key = f'RATE_LIMIT_{domain_key}'
+    
+    return int(os.getenv(env_key, DEFAULT_RATE_LIMIT))

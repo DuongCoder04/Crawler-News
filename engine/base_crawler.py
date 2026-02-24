@@ -31,8 +31,11 @@ class BaseCrawler(ABC):
         self.name = config['name']
         
         # Initialize utilities
+        # Get rate limit from env, fallback to config if not set
+        rate_limit = settings.get_rate_limit_for_domain(self.domain)
+        
         self.rate_limiter = RateLimiter(
-            requests_per_minute=config['rate_limit']['requests_per_minute']
+            requests_per_minute=rate_limit
         )
         self.robots_checker = RobotsChecker(self.domain)
         self.url_normalizer = URLNormalizer()
