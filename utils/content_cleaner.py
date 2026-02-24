@@ -88,6 +88,9 @@ class ContentCleaner:
             if 'dân trí' in source_name.lower() or 'dantri' in source_name.lower():
                 self._clean_dantri_specific(soup)
             
+            # Remove all links from content (convert to plain text)
+            self._remove_links(soup)
+            
             # Fix images - convert lazy loading to actual src
             self._fix_images(soup)
             
@@ -124,6 +127,36 @@ class ContentCleaner:
         Args:
             soup: BeautifulSoup object
         """
+        # Remove h1 title (it's already saved separately in title field)
+        for h1 in soup.find_all('h1'):
+            h1.decompose()
+        
+        # Remove category tags (THỜI SỰ, etc.)
+        # e-magazine__maincate contains category name
+        for div in soup.find_all('div', class_=lambda x: x and 'maincate' in str(x).lower()):
+            div.decompose()
+        
+        # Remove author info section (Thực hiện:, etc.)
+        # e-magazine__info and e-magazine__meta contain author info
+        for div in soup.find_all('div', class_=lambda x: x and ('e-magazine__info' in str(x) or 'e-magazine__meta' in str(x))):
+            div.decompose()
+        
+        # Remove any remaining author meta items
+        for span in soup.find_all('span', class_=lambda x: x and 'author' in str(x).lower()):
+            span.decompose()
+        
+        # Remove category tags (usually at the beginning of content)
+        # Dantri uses div with class containing 'tag' or 'category'
+        for div in soup.find_all('div', class_=lambda x: x and ('tag' in str(x).lower() or 'category' in str(x).lower())):
+            div.decompose()
+        
+        # Remove breadcrumb navigation
+        for nav in soup.find_all('nav'):
+            nav.decompose()
+        
+        for ul in soup.find_all('ul', class_=lambda x: x and 'breadcrumb' in str(x).lower()):
+            ul.decompose()
+        
         # Remove author info container (avatar, name, time)
         # Dantri uses specific structure: div.dt-flex.dt-items-center.dt-gap-1
         for div in soup.find_all('div', class_=lambda x: x and 'dt-flex' in x and 'dt-items-center' in x):
@@ -166,6 +199,17 @@ class ContentCleaner:
                 # Remove the prefix
                 new_text = re.sub(r'^\s*\(Dân [tT]rí\)\s*[-–—]\s*', '', text)
                 h2.string = new_text
+    
+    def _remove_links(self, soup: BeautifulSoup):
+        """
+        Remove all links from content (convert to plain text)
+        
+        Args:
+            soup: BeautifulSoup object
+        """
+        for a in soup.find_all('a'):
+            # Keep the text but remove the link
+            a.unwrap()
     
     def _fix_images(self, soup: BeautifulSoup):
         """
