@@ -1,4 +1,4 @@
-# X-Wise News Crawler System 🗞️
+# News Crawler System 🗞️
 
 Automated news crawler system for X-Wise CMS with CDN integration, scheduler, and multi-source support.
 
@@ -297,7 +297,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 - VnExpress for news content
 - 0x2labs for CDN services
-- X-Wise CMS team
 
 ---
 
